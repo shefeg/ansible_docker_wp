@@ -19,38 +19,13 @@
     state: present
 
 - name: "Check if certificates exist"
-  command: ls {{ project_src }}/nginx/certificates/{{ wp_site_url }}.crt && \
-           ls {{ project_src }}/nginx/certificates/{{ wp_site_url }}.key
+  command: ls {{ project_src }}/nginx/certificates/{{ wp_site_url }}*.pem && \
+           ls {{ project_src }}/nginx/certificates/{{ wp_site_url }}*.crt && \
+           ls {{ project_src }}/nginx/certificates/{{ wp_site_url }}*.key
   register: certificates_result
   ignore_errors: true
 
-- name: Generate RSA Key
-  command: openssl genrsa \
-    -out "{{ project_src }}/nginx/certificates/{{ wp_site_url }}.key" 2048
-  args:
-    creates: "{{ project_src }}/nginx/certificates/{{ wp_site_url }}.key"
-  register: rsa_key_result
+- name: Generate self-signed certificates
+  script: "{{ inventory_dir }}/self-signed-ssl.sh \
+          -c=UA -s=Kiev -l=Kiev -o=Docker -u=Docker -e={{ wp_admin_email }} -n={{ wp_site_url }} -p={{ project_src }}/nginx/certificates/"
   when: '"No such file or directory" in certificates_result.stderr'
-
-- name: Generate CSR
-  command: openssl req \
-    -new \
-    -subj '/C=UA/ST=Kiev/L=Kiev/O=Docker/CN={{ wp_site_url }}'
-    -key "{{ project_src }}/nginx/certificates/{{ wp_site_url }}.key" \
-    -out "{{ project_src }}/nginx/certificates/{{ wp_site_url }}.csr"
-  args:
-    creates: "{{ project_src }}/nginx/certificates/{{ wp_site_url }}.csr"
-  register: csr_result
-  when: rsa_key_result.changed
-
-- name: Generate Self-signed Certificate
-  command: openssl req \
-    -x509 \
-    -sha256 \
-    -days 365 \
-    -key "{{ project_src }}/nginx/certificates/{{ wp_site_url }}.key" \
-    -in "{{ project_src }}/nginx/certificates/{{ wp_site_url }}.csr" \
-    -out "{{ project_src }}/nginx/certificates/{{ wp_site_url }}.crt"
-  args:
-    creates: "{{ project_src }}/nginx/certificates/{{ wp_site_url }}.crt"
-  when: csr_result.changed
