@@ -6,7 +6,7 @@ server {
 
 server {
     listen 443 ssl;
-    server_name {{ wp_site_url }} {{ wp_site_url }};
+    server_name {{ wp_site_url }} www.{{ wp_site_url }};
 
     root /var/www/html;
     index index.php;
