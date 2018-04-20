@@ -8,7 +8,7 @@ scriptName=`basename $0`
 # Certificate Variables
 OUTPATH="./"
 VERBOSE=0
-DURATION=3650 # 10 years
+DURATION=30 # 30 days
 
 safeExit() {
   if [ -d $tmp ]; then
