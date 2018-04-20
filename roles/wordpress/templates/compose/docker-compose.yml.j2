@@ -1,0 +1,67 @@
+version: "3.5"
+services:
+
+  db:
+    build:
+      context: db/.
+      dockerfile: Dockerfile
+    image: db_custom:1.0
+    hostname: mysql
+    tty: true
+    environment:
+      MYSQL_ROOT_PASSWORD: '{{ mysql_db_root_password }}'
+      MYSQL_PASSWORD: '{{ mysql_db_password }}'
+      MYSQL_USER: '{{ mysql_db_user }}'
+      MYSQL_DATABASE: '{{ mysql_db_name }}'
+    volumes:
+      - db-data:/var/lib/mysql
+    restart: always
+        
+  wordpress:
+    build:
+      context: wordpress/.
+      dockerfile: Dockerfile
+    image: wordpress_custom:1.0
+    hostname: wordpress
+    environment:
+      WORDPRESS_DB_PASSWORD: '{{ mysql_db_password }}'
+      WORDPRESS_DB_USER: '{{ mysql_db_user }}'
+      WORDPRESS_DB_NAME: '{{ mysql_db_name }}'
+      WORDPRESS_DB_HOST: 'db:3306'
+    volumes:
+      - wp-data:/var/www/html
+    links:
+      - db
+      - memcached
+    restart: always
+
+  memcached:
+    image: memcached:latest
+    hostname: memcached
+
+  nginx:
+    build:
+      context: nginx/.
+      dockerfile: Dockerfile
+    image: nginx_custom:1.0
+    hostname: nginx
+    volumes:
+      - nginx-logs:/var/log/nginx
+      - nginx-ssl:/etc/nginx/ssl
+      - nginx-conf:/etc/nginx/conf.d
+      - wp-data:/var/www/html
+    ports:
+      - "80:80"
+      - "443:443"
+    command: /bin/sh -c "nginx -g 'daemon off;'"
+    links:
+      - wordpress
+      - memcached
+    restart: always
+
+volumes:
+  db-data:
+  wp-data:
+  nginx-logs:
+  nginx-ssl:
+  nginx-conf:

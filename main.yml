@@ -1,0 +1,8 @@
+---
+- hosts: ubuntu
+  become: true
+  vars_files:
+    - [ "group_vars/all/{{ ansible_os_family }}.yml", "group_vars/all/os_defaults.yml" ]
+  roles:
+    - packages
+    - wordpress

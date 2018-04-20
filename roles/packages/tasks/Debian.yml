@@ -1,0 +1,81 @@
+---
+- name: Add "{{ python_repo }}" repositories
+  apt_repository:
+    repo: "{{ python_repo }}"
+    state: present
+  when: ansible_python_version is version_compare("2.6", "<")
+  register: python_apt_add
+
+- name: Install "{{ python_packages }}" packages
+  apt:
+    name: "{{ python_packages }}"
+    update_cache: yes
+    state: present
+  when: python_apt_add.changed
+
+- name: Install "{{ pip_packages }}" packages
+  apt:
+    name: "{{ pip_packages }}"
+    update_cache: yes
+    state: latest
+
+- name: Install "{{ pyyaml_packages }}" packages
+  apt:
+    name: "{{ pyyaml_packages }}"
+    update_cache: yes
+    state: present
+
+- name: "Check Docker version"
+  shell: docker -v 2>&1
+  register: docker_version
+  ignore_errors: true
+  
+- name: Remove old Docker packages
+  apt:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - "docker"
+    - "docker-engine"
+    - "docker.io"
+  when: '"18.03.0-ce" not in docker_version.stdout'
+
+- name: Install "{{ docker_pre_packages }}" packages
+  apt:
+    name: "{{ docker_pre_packages }}"
+    update_cache: yes
+    state: present
+
+- name: Add Docker Apt signing key
+  apt_key:
+    url: "{{ docker_apt_key_url }}"
+    state: present
+
+- name: Check if Docker Apt signing key is correct
+  command: apt-key fingerprint 0EBFCD88
+  register: docker_apt_key
+
+- debug:
+    msg: "{{ docker_apt_key }}"
+
+- name: Add "{{ docker_repo }}" repositories
+  apt_repository:
+    repo: "{{ docker_repo }}"
+    state: present
+
+- name: Install "{{ docker_packages }}" packages
+  apt:
+    name: "{{ docker_packages }}"
+    update_cache: yes
+    state: present
+
+- name: Check Docker-compose version
+  shell: docker-compose --version 2>&1
+  register: docker_compose_version
+  ignore_errors: true
+
+- name: Install Docker-compose
+  pip:
+    name: docker-compose
+    state: latest
+  when: '"1.21.0" not in docker_compose_version.stdout or docker_compose_version.rc != 0'

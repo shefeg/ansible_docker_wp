@@ -1,0 +1,52 @@
+---
+- name: Docker-compose down
+  docker_service:
+    project_src: "{{ project_src }}"
+    state: absent
+
+- name: Docker-compose up
+  docker_service:
+    project_src: "{{ project_src }}"
+    state: present
+    build: yes
+  register: output
+
+- name: "Wait for services to start"
+  pause: seconds=10
+
+- debug:
+    var: output
+
+- name: Check if all services are running
+  assert:
+    that:
+      - "nginx.compose_nginx_1.state.running"
+      - "wordpress.compose_wordpress_1.state.running"
+      - "db.compose_db_1.state.running"
+      - "memcached.compose_memcached_1.state.running"
+
+- name: Make sure Wordpress db contains correct credentials and server name
+  command: |
+    docker exec compose_db_1 mysql -u {{ mysql_db_user }} -p'{{ mysql_db_password }}' {{ mysql_db_name }} -e \
+    "UPDATE wp_options SET option_value='https://{{ wp_site_url }}' WHERE option_id in(1,2);
+    UPDATE wp_options SET option_value='{{ wp_site_url }}' WHERE option_id=3;
+    UPDATE wp_users SET user_login='{{ wp_admin_user }}' WHERE ID=1 LIMIT 1;
+    UPDATE wp_users SET user_pass=MD5('{{ wp_admin_password }}') WHERE ID=1 LIMIT 1;
+    UPDATE wp_users SET user_email='{{ wp_admin_email }}' WHERE ID=1 LIMIT 1;"
+
+- name: Insert Wordpress server name to hosts file
+  blockinfile:
+    block: "{{ ''.join(groups.ubuntu) }} {{ wp_site_url }}"
+    path: /etc/hosts
+
+- name: "Check the status of Wordpress site"
+  uri:
+    url: "https://{{ wp_site_url }}"
+    validate_certs: no
+    return_content: yes
+  register: webpage
+
+- name: "Ensure that proper data is present in stdout"
+  assert:
+    that:
+      - "'wp-app' in webpage.content"

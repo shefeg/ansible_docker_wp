@@ -1,0 +1,18 @@
+---
+ansible_connection: ssh
+ansible_port: 22
+ansible_user: "{{ vault_ansible_user }}"
+ansible_ssh_pass: "{{ vault_ansible_ssh_pass }}"
+
+mysql_db_name: "{{ vault_mysql_db_name }}"
+mysql_db_user: "{{ vault_mysql_db_user }}"
+mysql_db_password: "{{ vault_mysql_db_password }}"
+mysql_db_root_password: "{{ vault_mysql_db_root_password }}"
+
+wp_admin_user: "{{  vault_wp_admin_user  }}"
+wp_admin_password: "{{  vault_wp_admin_password  }}"
+wp_admin_email: "{{  vault_wp_admin_email  }}"
+
+project_src: "{{ ansible_env.HOME }}/compose"
+
+wp_site_url: wp-app.com
