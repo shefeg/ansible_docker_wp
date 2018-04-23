@@ -47,6 +47,7 @@ you'll be accessing Wordpress site.
 In order to do this:
 Navigate to Plugins, install and activate "WP-FFPC" plugin and click Settings.
 Set the following minimal configuration options:
+
 * **Cache Type/Select Backend:** *PHP Memcached*
 * **Backend Settings/Hosts:** *memcached:11211*
 * **Backend Settings/Authentication:** *username: Empty*
