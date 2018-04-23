@@ -45,8 +45,9 @@ created on the remote server in `/root/compose/nginx/certificates` directory.
 You should add them to the trusted certificate store on the machine from where
 you'll be accessing Wordpress site.**
 
-* **After login into Wordpress admin page you should **Enable Object Caching** to initialize memcaching.**
+* **After login into Wordpress admin page you should Enable Object Caching to initialize memcaching.**
 In order to do this:
+
 Navigate to Plugins, install and activate "WP-FFPC" plugin and click Settings.
 Set the following minimal configuration options:
 
