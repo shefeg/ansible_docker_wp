@@ -43,7 +43,7 @@ Generate self-signed TLS certificate using OpenSSL
 
 # Test output path is valid
 testPath() {
-  if [ ! -d $OUTPATH ]; then
+  if ! [ -d $OUTPATH ]; then
     echo "The specified directory \"${OUTPATH}\" does not exist"
     exit 1
   fi

@@ -12,6 +12,11 @@
     - { src: "templates/compose/nginx/config/site.conf.j2", dest: "{{ project_src }}/nginx/config/site.conf" }
     - { src: "templates/compose/docker-compose.yml.j2", dest: "{{ project_src }}/docker-compose.yml" }
 
+- name: Copy Docker backup script
+  copy:
+    src: "{{ inventory_dir }}/docker-backup.sh"
+    dest: "{{ ansible_env.HOME }}"
+
 - name: Install openssl packages
   apt:
     name: openssl

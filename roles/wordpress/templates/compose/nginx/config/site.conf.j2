@@ -26,6 +26,8 @@ server {
     add_header Strict-Transport-Security "max-age=31536000;";
     add_header Content-Security-Policy-Report-Only "default-src https:; script-src https: 'unsafe-eval' 'unsafe-inline'; style-src https: 'unsafe-inline'; img-src https: data:; font-src https: data:; report-uri /csp-report";
 
+    # Redirect all requests for unknown URLs out of images and back to the
+    # root index.php file
     location / {
         try_files $uri $uri/ /index.php?$args;
     }
@@ -38,5 +40,60 @@ server {
         include fastcgi_params;
         fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
         fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+
+    location ~* /(?:uploads|files)/.*.php$ {
+        deny all;
+    }
+
+    location ~* /(?:uploads|files)/.*.php$ {
+        deny all;
+    }
+
+    location ~* .(engine|inc|info|install|make|module|profile|test|po|sh|.*sql|theme|tpl(.php)?|xtmpl)$|^(..*|Entries.*|Repository|Root|Tag|Template)$|.php_ {
+        return 444;
+    }
+
+    location ~* .(pl|cgi|py|sh|lua)$ {
+        return 444;
+    }
+
+    location ~ .(gif|png|jpe?g)$ {
+        valid_referers none blocked mywebsite.com *.mywebsite.com;
+        if ($invalid_referer) {
+            return   403;
+       }
+    }
+
+    # Prevent access to any files starting with a dot, like .htaccess
+    # or text editor temp files
+    location ~* /\. { access_log off; log_not_found off; deny all; }
+
+    # Protect your wp-config.php file from intrusion
+    location ~* /\wp-config.php { access_log off; log_not_found off; deny all; }
+
+    # Prevent access to any files starting with a $ (usually temp files)
+    location ~ ~$ { access_log off; log_not_found off; deny all; }
+
+    # Do not log access to robots.txt, to keep the logs cleaner
+    location = /robots.txt { access_log off; log_not_found off; }
+
+    # Do not log access to the favicon, to keep the logs cleaner
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    # Keep images and CSS around in browser cache for as long as possible,
+    # to cut down on server load
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico)$ {
+        try_files $uri /index.php;
+        expires max;
+        log_not_found off;
+    }
+
+    # Force potentially-malicious files in the /images directory to be served
+    # with a text/plain mime type, to prevent them from being executed by
+    # the PHP handler
+    location ~* ^/images/.*.(html|htm|shtml|php)$ {
+        types { }
+        default_type text/plain;
     }
 }
