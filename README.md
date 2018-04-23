@@ -4,26 +4,26 @@ Project overview: NGINX + Wordpress + PHP-FPM + MySQL + Memcached.
 
 ### Getting Started
 #### Prerequisites
-1. Windows/Linux environment with Andible version 2.3+ installed
+Windows/Linux environment with Andible version 2.3+ installed
 
 #### Installing
-1. Clone repository
-```
+1.    Clone repository
+~~~~
 git clone https://shefeg@bitbucket.org/shefeg/ansible_docker_wp.git
 cd ansible_docker_wp
-```  
+~~~~
 
-2. Specify ip of the server in `hosts` file where you will be making deployment
-```
+2.    Specify ip of the server in `hosts` file where you will be making deployment
+~~~~   
 [ubuntu]
 # ip of ubuntu server here
 10.130.75.250
-```  
+~~~~
 
-3. Deploy command example with default variables:
-```
+3.    Deploy command example with default variables:
+~~~~
 ansible-playbook main.yml --vault-password-file vault_secret.sh
-```  
+~~~~ 
 `vault_secret.sh` contains password "123" for demo purposes.
 This file is intended for using in CI-CD chain for automated deployments
 with default variables.
