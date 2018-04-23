@@ -1,5 +1,5 @@
 ## Dockerized Wordpress application deployment
-Deploy dockerized Wordpress application using Ansible into Ubuntu 16.04 server. <br />
+Deploy dockerized Wordpress application using Ansible into Ubuntu 16.04 server.  
 Project overview: NGINX + Wordpress + PHP-FPM + MySQL + Memcached.
 
 ### Getting Started
@@ -11,17 +11,19 @@ Project overview: NGINX + Wordpress + PHP-FPM + MySQL + Memcached.
 ```
 git clone https://shefeg@bitbucket.org/shefeg/ansible_docker_wp.git
 cd ansible_docker_wp
-```
+```  
+
 2. Specify ip of the server in `hosts` file where you will be making deployment
 ```
 [ubuntu]
 # ip of ubuntu server here
 10.130.75.250
-```
+```  
+
 3. Deploy command example with default variables:
 ```
 ansible-playbook main.yml --vault-password-file vault_secret.sh
-```
+```  
 `vault_secret.sh` contains password "123" for demo purposes.
 This file is intended for using in CI-CD chain for automated deployments
 with default variables.
@@ -35,7 +37,7 @@ wp_admin_user=wpadmin wp_admin_password='wpadmin1' wp_admin_email='wpadmin@examp
 ```
 Variable names should be self explonatory.
 Though just in case will give you info about some of them:
-`wp_site_url`: Wordpress site URL. This URL will be used in self-signed certificates. <br />
+`wp_site_url`: Wordpress site URL. This URL will be used in self-signed certificates.  
 `wp_admin_user, wp_admin_password, wp_admin_email`: credentials to log in to the Wordpress admin page.
 
 5. After `ansible-playbook` tool completes, self-signed certificates `.pem`,`.crt` created on the
