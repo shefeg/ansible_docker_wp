@@ -1,26 +1,26 @@
-## Dockerized Wordpress application deployment
+# Dockerized Wordpress application deployment
 Deploy dockerized Wordpress application using Ansible into Ubuntu 16.04 server.  
 Project overview: NGINX + Wordpress + PHP-FPM + MySQL + Memcached.
 
-### Getting Started
-#### Prerequisites
+## Getting Started
+### Prerequisites
 Windows/Linux environment with Andible version 2.3+ installed
 
-#### Installing
-* Clone repository
+### Installing
+* **Clone repository**
 ~~~~
 git clone https://shefeg@bitbucket.org/shefeg/ansible_docker_wp.git
 cd ansible_docker_wp
 ~~~~
 
-* Specify ip of the server in `hosts` file where you will be making deployment
+* **Specify ip of the server in `hosts` file where you will be making deployment**
 ~~~~   
 [ubuntu]
 # ip of ubuntu server here
 10.130.75.250
 ~~~~
 
-* Deploy command example with default variables:
+* **Deploy command example with default variables:**
 ~~~~
 ansible-playbook main.yml --vault-password-file vault_secret.sh
 ~~~~ 
@@ -28,7 +28,7 @@ ansible-playbook main.yml --vault-password-file vault_secret.sh
 This file is intended for using in CI-CD chain for automated deployments
 with default variables.
 
-* You can specify your own variable values in the command line during run of `ansible-playbook` tool:
+* **You can specify your own variable values in the command line during run of `ansible-playbook` tool:**
 ~~~~
 ansible-playbook main.yml --extra-vars "mysql_db_name=wordpressdb \
 mysql_db_user=wordpressuser mysql_db_password='Foo123456*' \
@@ -40,12 +40,12 @@ Though just in case will give you info about some of them:
 `wp_site_url`: Wordpress site URL. This URL will be used in self-signed certificates.  
 `wp_admin_user, wp_admin_password, wp_admin_email`: credentials to log in to the Wordpress admin page.
 
-* After `ansible-playbook` tool completes, self-signed certificates `.pem`,`.crt` created on the
+* **After `ansible-playbook` tool completes, self-signed certificates `.pem`,`.crt` created on the
 created on the remote server in `/root/compose/nginx/certificates` directory.
 You should add them to the trusted certificate store on the machine from where
-you'll be accessing Wordpress site.
+you'll be accessing Wordpress site.**
 
-* After login into Wordpress admin page you should **Enable Object Caching** to initialize memcaching.
+* **After login into Wordpress admin page you should **Enable Object Caching** to initialize memcaching.**
 In order to do this:
 Navigate to Plugins, install and activate "WP-FFPC" plugin and click Settings.
 Set the following minimal configuration options:
@@ -58,7 +58,7 @@ Set the following minimal configuration options:
 
 Install ans activate "W3 Total Cache" plugin.
 
-* Run the following commands from the remote machine where you performed deployment:
+* **Run the following commands from the remote machine where you performed deployment:**
 ~~~~
 WP_CLI=$(docker ps -q -f name=compose_wordpress_1)
 docker container exec ${WP_CLI} bash -c 'wp --allow-root core update && \
