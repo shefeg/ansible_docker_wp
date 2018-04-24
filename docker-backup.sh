@@ -25,6 +25,7 @@ Backup|Restore of docker containers and|or docker volumes
   "
 }
 
+# TODO: implement transfering backups to S3
 # TODO: implement backup|restore of certain volumes
 # TODO: add more exceptions handling
 
