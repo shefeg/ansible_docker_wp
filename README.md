@@ -7,70 +7,68 @@ Project overview: NGINX + Wordpress + PHP-FPM + MySQL + Memcached.
 Windows/Linux environment with Andible version 2.3+ installed
 
 ### Installing
-* **Clone repository**
-~~~~
-git clone https://shefeg@bitbucket.org/shefeg/ansible_docker_wp.git
-cd ansible_docker_wp
-~~~~
+  1. Clone repository:
 
-* **Specify ip of the server in `hosts` file where you will be making deployment**
-~~~~   
-[ubuntu]
-# ip of ubuntu server here
-10.130.75.250
-~~~~
+      `git clone https://shefeg@bitbucket.org/shefeg/ansible_docker_wp.git
+      cd ansible_docker_wp`
 
-* **Deploy command example with default variables:**
-~~~~
-ansible-playbook main.yml --vault-password-file vault_secret.sh
-~~~~ 
-`vault_secret.sh` contains password "123" for demo purposes.
-This file is intended for using in CI-CD chain for automated deployments
-with default variables.
+  2. Specify ip of the server in `hosts` file where you will be making deployment:
+      ~~~~
+      [ubuntu]
+      # ip of ubuntu server here
+      10.130.75.250
+      ~~~~
 
-* **You can specify your own variable values in the command line during run of `ansible-playbook` tool:**
-~~~~
-ansible-playbook main.yml --extra-vars "mysql_db_name=wordpressdb \
-mysql_db_user=wordpressuser mysql_db_password='Foo123456*' \
-mysql_db_root_password='Foo1234567*1' wp_site_url=wp-app.com \
-wp_admin_user=wpadmin wp_admin_password='wpadmin1' wp_admin_email='wpadmin@example.com'"
-~~~~
-Variable names should be self explonatory.
-Though just in case will give you info about some of them:
-`wp_site_url`: Wordpress site URL. This URL will be used in self-signed certificates.  
-`wp_admin_user, wp_admin_password, wp_admin_email`: credentials to log in to the Wordpress admin page.
+  3. Deploy command example with default variables:
 
-* **After `ansible-playbook` tool completes, self-signed certificates `.pem`,`.crt` created on the
-created on the remote server in `/root/compose/nginx/certificates` directory.
-You should add them to the trusted certificate store on the machine from where
-you'll be accessing Wordpress site.**
+      `ansible-playbook main.yml --vault-password-file vault_secret.sh`
 
-* **Add ip-donain name record to the `hosts` file of the machine from where you'll be accessing Wordpress site. 
-For example: **
-~~~~
-10.130.75.250   wp-app.com
-~~~~
+      `vault_secret.sh` contains password "123" for demo purposes.
 
-* **After login into Wordpress admin page you should Enable Object Caching to initialize memcaching.**
-In order to do this:
+      This file is intended for using in CI-CD chain for automated deployments
+      with default variables.
 
-Navigate to Plugins, install and activate "WP-FFPC" plugin and click Settings.
-Set the following minimal configuration options:
+4. You can specify your own variable values in the command line during run of `ansible-playbook` tool:
+      ~~~~
+      ansible-playbook main.yml --extra-vars "mysql_db_name=wordpressdb \
+      mysql_db_user=wordpressuser mysql_db_password='Foo123456*' \
+      mysql_db_root_password='Foo1234567*1' wp_site_url=wp-app.com \
+      wp_admin_user=wpadmin wp_admin_password='wpadmin1'      wp_admin_email='wpadmin@example.com'"
+      ~~~~
+      Variable names should be self explonatory.
 
-  * **Cache Type/Select Backend:** *PHP Memcached*
-  * **Backend Settings/Hosts:** *memcached:11211*
-  * **Backend Settings/Authentication:** *username: Empty*
-  * **Backend Settings/Authentication:** *password: Empty*
-  * **Backend Settings/Enable memcached binary mode:** *Activated*
+      Though just in case will give you info about some of them:
+      `wp_site_url`: Wordpress site URL. This URL will be used in self-signed  certificates.  
 
-Install and activate "W3 Total Cache" plugin.
+      `wp_admin_user, wp_admin_password, wp_admin_email`: credentials to log in to the Wordpress admin page.
 
-* **Run the following commands from the remote machine where you performed deployment:**
-~~~~
-WP_CLI=$(docker ps -q -f name=compose_wordpress_1)
-docker container exec ${WP_CLI} bash -c 'wp --allow-root core update && \
-wp --allow-root plugin update --all && wp --allow-root theme update --all'
-~~~~
+  5. After `ansible-playbook` tool completes, self-signed certificates `.pem`,  `.crt` created on the created on the remote server in   `/root/compose/nginx/certificates` directory.
+
+      You should add them to the trusted certificate store on the machine from where you'll be accessing Wordpress site.
+
+  6. Add ip-donain name record to the `hosts` file of the machine from where you'll be accessing Wordpress site. For example:
+
+      `10.130.75.250   wp-app.com`
+
+
+  7. After login into Wordpress admin page you should Enable Object Caching to initialize memcaching. In order to do this:
+
+      1. Navigate to Plugins, install and activate "WP-FFPC" plugin and click Settings. Set the following minimal configuration options:
+
+          * **Cache Type/Select Backend:** *PHP Memcached*
+          * **Backend Settings/Hosts:** *memcached:11211*
+          * **Backend Settings/Authentication:** *username: Empty*
+          * **Backend Settings/Authentication:** *password: Empty*
+          * **Backend Settings/Enable memcached binary mode:** *Activated*
+
+      2. Install and activate "W3 Total Cache" plugin.
+
+      3. Run the following commands from the remote machine where you performed deployment:
+          ~~~~
+          WP_CLI=$(docker ps -q -f name=compose_wordpress_1)
+          docker container exec ${WP_CLI} bash -c 'wp --allow-root core update && \
+          wp --allow-root plugin update --all && wp --allow-root theme update --all'
+          ~~~~
 
 #### Wordpress security hardening:
 1. Use SSL certificates for data security
@@ -98,4 +96,4 @@ the PHP handler
 to ssh to this machine (and other machines in the environments)
 5. Perform regular security patching and security updates on the machine
 
-Popular and good option to deploy infrastructure environments in cloud providers AWS, Azure, Google.
+    Popular and good option to deploy infrastructure environments in cloud providers AWS, Azure, Google.

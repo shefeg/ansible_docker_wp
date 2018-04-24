@@ -1,10 +1,9 @@
 # Backup and recovery plan
 This is a shot document about the procedure of creating and restoring backups
-of dockerized Wordpress application.
+of dockerized Wordpress application
 
 ## Backup procedure
-Backup procedure consists of making backup files of existing docker containers and
-volumes of containers.
+Backup procedure consists of making backup files of existing docker containers and volumes of containers
 
 #### Steps:
   1. Create a cron job for running `docker-backup.sh` script with `backup` parameter every day at 24:00 (please see `docker-backup.sh -h` for details). For example:
@@ -19,7 +18,7 @@ volumes of containers.
 ## Restore procedure
 Restore procedure consists of transfering backup files from AWS S3 bucket
 into machine and running `docker-backup.sh` script to uncompress
-backup archive files.
+backup archive files
 
 #### Steps:
   1. Transfer (copy) backup files from AWS S3 bucket using AWS CLI.
@@ -44,16 +43,12 @@ backup archive files.
       
           `docker run --rm --volumes-from new-container-name -v $(pwd):/backup ubuntu bash -c "cd /data-directory && tar xvf /backup/backup.tar --strip 1"`
       
-          You’ll get a new container with the data restored from the backup. It is also possible to restore the data to the existing container.
+          You’ll get a new container with the data restored from the backup. It is also possible to restore the data to the existing container
 
 #### Points to note..
 
-1. Backups should be properly named for identification and easy restore.
-
-2. Backups should be rotated regularly or moved to another storage to avoid ‘disk full’ errors.
-
-3. Backups should include all relevant information such as the registry data and config files too.
-
-4. Backups should be routinely tested and verified for adequacy.
-
-5. Backup restore should be performed with utmost caution, or else you may end up destroying containers wrongly.
+1. Backups should be properly named for identification and easy restore
+2. Backups should be rotated regularly or moved to another storage to avoid ‘disk full’ errors
+3. Backups should include all relevant information such as the registry data and config files too
+4. Backups should be routinely tested and verified for adequacy
+5. Backup restore should be performed with utmost caution, or else you may end up destroying containers wrongly
