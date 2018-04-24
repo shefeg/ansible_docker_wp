@@ -12,7 +12,7 @@
   register: output
 
 - name: "Wait for services to start"
-  pause: seconds=10
+  pause: seconds=20
 
 - debug:
     var: output
@@ -33,6 +33,10 @@
     UPDATE wp_users SET user_login='{{ wp_admin_user }}' WHERE ID=1 LIMIT 1;
     UPDATE wp_users SET user_pass=MD5('{{ wp_admin_password }}') WHERE ID=1 LIMIT 1;
     UPDATE wp_users SET user_email='{{ wp_admin_email }}' WHERE ID=1 LIMIT 1;"
+  retries: 5
+  delay: 3
+  register: result
+  until: result.rc == 0
 
 - name: Insert Wordpress server name to hosts file
   blockinfile:
@@ -45,8 +49,6 @@
     validate_certs: no
     return_content: yes
   register: webpage
-
-- name: "Ensure that proper data is present in stdout"
-  assert:
-    that:
-      - "'wp-app' in webpage.content"
+  retries: 3
+  delay: 2
+  until: webpage.content.find("wp-app") != -1

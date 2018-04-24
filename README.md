@@ -87,9 +87,6 @@ or text editor temp files
 to cut down on server load
 8. Redirect all requests for unknown URLs out of images and back to the
 root index.php file
-9. Force potentially-malicious files in the /images directory to be served
-with a text/plain mime type, to prevent them from being executed by
-the PHP handler
 
 #### Wordpress host machine security hardening:
 1. Limit ssh access to the machine from outside:

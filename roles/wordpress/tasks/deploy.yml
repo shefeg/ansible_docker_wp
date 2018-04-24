@@ -24,13 +24,14 @@
     state: present
 
 - name: "Check if certificates exist"
-  command: ls {{ project_src }}/nginx/certificates/{{ wp_site_url }}*.pem && \
-           ls {{ project_src }}/nginx/certificates/{{ wp_site_url }}*.crt && \
-           ls {{ project_src }}/nginx/certificates/{{ wp_site_url }}*.key
+  find:
+    paths: "{{ project_src }}/nginx/certificates"
+    patterns: "{{ wp_site_url }}_CA.pem, {{ wp_site_url }}.crt, {{ wp_site_url }}.key"
   register: certificates_result
   ignore_errors: true
 
 - name: Generate self-signed certificates
   script: "{{ inventory_dir }}/self-signed-ssl.sh \
           -c=UA -s=Kiev -l=Kiev -o=Docker -u=Docker -e={{ wp_admin_email }} -n={{ wp_site_url }} -p={{ project_src }}/nginx/certificates/"
-  when: '"No such file or directory" in certificates_result.stderr'
+  when: certificates_result.matched == 0
+  ignore_errors: true
