@@ -11,6 +11,7 @@ Windows/Linux environment with Andible version 2.3+ installed
 
       ````
       git clone https://shefeg@bitbucket.org/shefeg/ansible_docker_wp.git
+
       cd ansible_docker_wp
       ````
 
@@ -18,7 +19,9 @@ Windows/Linux environment with Andible version 2.3+ installed
 
       ````
       [ubuntu]
+
       # ip of ubuntu server here
+
       10.130.75.250
       ````
 
@@ -49,7 +52,7 @@ Windows/Linux environment with Andible version 2.3+ installed
 
       `wp_admin_user, wp_admin_password, wp_admin_email`: credentials to log in to the Wordpress admin page.
 
-  5. After `ansible-playbook` tool completes, self-signed certificates `.pem`,  `.crt` created on the created on the remote server in   `/root/compose/nginx/certificates` directory.
+  5. After `ansible-playbook` tool completes, self-signed certificates `.pem`, `.crt` created on the created on the remote server  in `/root/compose/nginx/certificates` directory.
 
       You should add them to the trusted certificate store on the machine from where you'll be accessing Wordpress site.
 
@@ -72,10 +75,12 @@ Windows/Linux environment with Andible version 2.3+ installed
       2. Install and activate "W3 Total Cache" plugin.
 
       3. Run the following commands from the remote machine where you performed deployment:
-      
+
           ````
           WP_CLI=$(docker ps -q -f name=compose_wordpress_1)
+
           docker container exec ${WP_CLI} bash -c 'wp --allow-root core update && \
+          
           wp --allow-root plugin update --all && wp --allow-root theme update --all'
           ````
 
