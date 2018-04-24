@@ -8,12 +8,14 @@ Windows/Linux environment with Andible version 2.3+ installed
 
 ### Installing
   1. Clone repository:
+
       ````
       git clone https://shefeg@bitbucket.org/shefeg/ansible_docker_wp.git
       cd ansible_docker_wp
       ````
-      
+
   2. Specify ip of the server in `hosts` file where you will be making deployment:
+
       ````
       [ubuntu]
       # ip of ubuntu server here
@@ -21,6 +23,7 @@ Windows/Linux environment with Andible version 2.3+ installed
       ````
 
   3. Deploy command example with default variables:
+
       ````
       ansible-playbook main.yml --vault-password-file vault_secret.sh
       ````
@@ -31,6 +34,7 @@ Windows/Linux environment with Andible version 2.3+ installed
       with default variables.
 
 4. You can specify your own variable values in the command line during run of `ansible-playbook` tool:
+
       ````
       ansible-playbook main.yml --extra-vars "mysql_db_name=wordpressdb \
       mysql_db_user=wordpressuser mysql_db_password='Foo123456*' \
@@ -50,6 +54,7 @@ Windows/Linux environment with Andible version 2.3+ installed
       You should add them to the trusted certificate store on the machine from where you'll be accessing Wordpress site.
 
   6. Add ip-donain name record to the `hosts` file of the machine from where you'll be accessing Wordpress site. For example:
+
       ````
       10.130.75.250   wp-app.com
       ````
@@ -67,6 +72,7 @@ Windows/Linux environment with Andible version 2.3+ installed
       2. Install and activate "W3 Total Cache" plugin.
 
       3. Run the following commands from the remote machine where you performed deployment:
+      
           ````
           WP_CLI=$(docker ps -q -f name=compose_wordpress_1)
           docker container exec ${WP_CLI} bash -c 'wp --allow-root core update && \
