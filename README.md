@@ -9,27 +9,22 @@ Windows/Linux environment with Andible version 2.3+ installed
 ### Installing
   1. Clone repository:
 
-      ````
+      ```
       git clone https://shefeg@bitbucket.org/shefeg/ansible_docker_wp.git
-
       cd ansible_docker_wp
-      ````
+      ```
 
   2. Specify ip of the server in `hosts` file where you will be making deployment:
 
-      ````
+      ```
       [ubuntu]
-
       # ip of ubuntu server here
-
       10.130.75.250
-      ````
+      ```
 
   3. Deploy command example with default variables:
 
-      ````
-      ansible-playbook main.yml --vault-password-file vault_secret.sh
-      ````
+      `ansible-playbook main.yml --vault-password-file vault_secret.sh`
 
       `vault_secret.sh` contains password "123" for demo purposes.
 
@@ -38,12 +33,12 @@ Windows/Linux environment with Andible version 2.3+ installed
 
 4. You can specify your own variable values in the command line during run of `ansible-playbook` tool:
 
-      ````
+      ```
       ansible-playbook main.yml --extra-vars "mysql_db_name=wordpressdb \
       mysql_db_user=wordpressuser mysql_db_password='Foo123456*' \
       mysql_db_root_password='Foo1234567*1' wp_site_url=wp-app.com \
       wp_admin_user=wpadmin wp_admin_password='wpadmin1'      wp_admin_email='wpadmin@example.com'"
-      ````
+      ```
 
       Variable names should be self explonatory.
 
@@ -58,9 +53,9 @@ Windows/Linux environment with Andible version 2.3+ installed
 
   6. Add ip-donain name record to the `hosts` file of the machine from where you'll be accessing Wordpress site. For example:
 
-      ````
+      ```
       10.130.75.250   wp-app.com
-      ````
+      ```
 
   7. After login into Wordpress admin page you should Enable Object Caching to initialize memcaching. In order to do this:
 
@@ -76,13 +71,9 @@ Windows/Linux environment with Andible version 2.3+ installed
 
       3. Run the following commands from the remote machine where you performed deployment:
 
-          ````
-          WP_CLI=$(docker ps -q -f name=compose_wordpress_1)
-
+          `WP_CLI=$(docker ps -q -f name=compose_wordpress_1)
           docker container exec ${WP_CLI} bash -c 'wp --allow-root core update && \
-          
-          wp --allow-root plugin update --all && wp --allow-root theme update --all'
-          ````
+          wp --allow-root plugin update --all && wp --allow-root theme update --all'`
 
 #### Wordpress security hardening:
 1. Use SSL certificates for data security
