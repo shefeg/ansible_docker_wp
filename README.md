@@ -45,6 +45,12 @@ created on the remote server in `/root/compose/nginx/certificates` directory.
 You should add them to the trusted certificate store on the machine from where
 you'll be accessing Wordpress site.**
 
+* **Add ip-donain name record to the `hosts` file of the machine from where you'll be accessing Wordpress site. 
+For example: **
+~~~~
+10.130.75.250   wp-app.com
+~~~~
+
 * **After login into Wordpress admin page you should Enable Object Caching to initialize memcaching.**
 In order to do this:
 
@@ -57,7 +63,7 @@ Set the following minimal configuration options:
   * **Backend Settings/Authentication:** *password: Empty*
   * **Backend Settings/Enable memcached binary mode:** *Activated*
 
-Install ans activate "W3 Total Cache" plugin.
+Install and activate "W3 Total Cache" plugin.
 
 * **Run the following commands from the remote machine where you performed deployment:**
 ~~~~

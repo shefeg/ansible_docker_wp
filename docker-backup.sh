@@ -2,7 +2,7 @@
 
 cur="$(pwd)"
 tmp="$(mktemp -d)"
-script_name="$(basename $0)"
+script_name="$(basename "$0")"
 date="$(date +%Y-%m-%d_%H-%M-%S)"
 
 # Help Screen
@@ -13,6 +13,7 @@ Backup|Restore of docker containers and|or docker volumes
  Options:
   backup               Perform backup action
   restore              Perform restore action
+  -c|--container_id    Container ID
   -p|--backup_path     Path to directory where backup files will be created or
                        where backup files will be restored
   -b|--backup_file     Path to backup file for restoring
@@ -24,7 +25,8 @@ Backup|Restore of docker containers and|or docker volumes
   "
 }
 
-# TODO: implements backup|restore of certain containers and volumes
+# TODO: implement backup|restore of certain volumes
+# TODO: add more exceptions handling
 
 # Init
 init() 
@@ -43,8 +45,17 @@ test_output_path()
 
 test_backup_path()
 {
-    if ! [ -f "${BACKUP_FILE}" ]; then
+  if ! [ -f "${BACKUP_FILE}" ]; then
     echo "The specified file \"${BACKUP_FILE}\" does not exist"
+    exit 1
+  fi
+}
+
+test_container_id()
+{
+  docker container inspect "${CONTAINER_ID}" > /dev/null
+  if [[ $? -eq 1 ]]; then
+    echo "The specified container \"${CONTAINER_ID}\" does not exist";
     exit 1
   fi
 }
@@ -76,12 +87,13 @@ control_c()
 trap control_c SIGINT INT TERM
 
 # Process Arguments
-while [ "$2" != "" ]; do
-  PARAM="$(echo "$2" | awk -F= '{print $1}')"
-  VALUE="$(echo "$2" | awk -F= '{print $2}')"
+while [ "$1" != "" ]; do
+  PARAM="$(echo "$1" | awk -F= '{print $1}')"
+  VALUE="$(echo "$1" | awk -F= '{print $2}')"
   case ${PARAM} in
     backup) ACTION="${PARAM}" ;;
     restore) ACTION="${PARAM}" ;;
+    -c|--container_id) CONTAINER_ID="${VALUE}"; test_container_id ;;
     -p|--backup_path) OUTPATH="${VALUE}"; test_output_path ;;
     -b|--backup_file) BACKUP_FILE="${VALUE}"; test_backup_path ;;
     -h|--help) help; safeExit ;;
@@ -93,7 +105,7 @@ done
 # Backup full
 backup_full()
 {
-  BACKUP_NAME="docker_backup_$date"
+  BACKUP_NAME="docker_backup_${date}"
   
   # Containers backup
   init
@@ -127,13 +139,35 @@ backup_full()
   cleanup
 }
 
+backup_container()
+{
+  container_name="$(docker ps -f "id=${CONTAINER_ID}" --format '{{.Names}}')"
+  BACKUP_NAME="docker_backup_${container_name}_${date}"
+  
+  # Container backup
+  init
+  echo "Creating backup for container ID ${CONTAINER_ID}..."
+  docker commit -p "${CONTAINER_ID}" "backup-container-${container_name}"
+  docker save -o "backup-container-${container_name}.tar" "backup-container-${container_name}"
+  docker image rm $(docker images -q "backup-container-${container_name}")
+  echo
+  
+  # Compressing backup files to an archive
+  echo
+  echo "Compressing backup files into an archive '${BACKUP_NAME}.tar.gz'..."
+  tar -cvzf "${OUTPATH}/${BACKUP_NAME}.tar.gz" -C "${tmp}" ./* && \
+  echo "Backup archive '${BACKUP_NAME}.tar.gz' created successfully"
+
+  cleanup
+}
+
 restore_full()
 {
   # Unarchive all backup files
   echo "Uncompressing backup files..."
   echo
   tar -xf "${BACKUP_FILE}" -C "${OUTPATH}" || \
-  echo -e "\nMake sure to specify all parameters correctly\n" && help && exit 1
+  echo -e "\nMake sure to specify all parameters correctly\n" && help && cleanup && exit 1
 
   # Restore containers
   for i in ${OUTPATH}/backup-container-*.tar; do
@@ -150,14 +184,12 @@ restore_full()
   cleanup
 }
 
-if [ "$#" -lt 1 ]; then
-  help; exit 1
-fi
-
-if [ "${ACTION}" == "backup" ]; then
+if [ "${ACTION}" == "backup" ] && [ -z "${CONTAINER_ID}" ]; then
   backup_full
+elif [ "${ACTION}" == "backup" ] && ! [ -z "${CONTAINER_ID}" ]; then
+  backup_container
 elif [ "${ACTION}" == "restore" ]; then
   restore_full
 else
-  help; exit 1
+  help; cleanup; exit 1
 fi
