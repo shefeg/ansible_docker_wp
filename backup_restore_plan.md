@@ -10,6 +10,7 @@ Backup procedure consists of making backup files of existing docker containers a
       ````
       ./docker-backup.sh backup -p=/tmp/backup_full
       ````
+      
   2. Cron job also should have commands to move created backups to AWS S3 bucket 
   (until this functional won't be implemented in the backup script). For example:
       ````
@@ -26,24 +27,29 @@ backup archive files
       ````
       aws s3 cp s3://mybucket/docker_backup_2018-04-23_15-21-44.tar.gz docker_backup_2018-04-23_15-21-44.tar.gz
       ````
+
   2. Run `docker-backup.sh` script with `restore` parameter. For example:
       ````
       ./docker-backup.sh restore -b=/backup_full/docker_backup_2018-04-23_15-21-44.tar.gz -p=/backup_full/restore
       ````
+
   3. Make sure docker containers are restored with docker command: 
       ````
       docker images
       ````
+
   4. Restore volumes to containers:
 
       1. To restore a container using the backup of data volumes taken, first create a new container by providing data volume and container names. For example:
           ````
           docker run -v /data-directory --name new-container-name ubuntu /bin/bash
           ````
+
       2. Untar the backup file created, to the new container`s data volume. For example:
           ````
           docker run --rm --volumes-from new-container-name -v $(pwd):/backup ubuntu bash -c "cd /data-directory && tar xvf /backup/backup.tar --strip 1"
           ````
+
           You’ll get a new container with the data restored from the backup. It is also possible to restore the data to the existing container
 
 #### Points to note..

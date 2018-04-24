@@ -12,12 +12,14 @@ Windows/Linux environment with Andible version 2.3+ installed
       git clone https://shefeg@bitbucket.org/shefeg/ansible_docker_wp.git
       cd ansible_docker_wp
       ````
+      
   2. Specify ip of the server in `hosts` file where you will be making deployment:
       ````
       [ubuntu]
       # ip of ubuntu server here
       10.130.75.250
       ````
+
   3. Deploy command example with default variables:
       ````
       ansible-playbook main.yml --vault-password-file vault_secret.sh
@@ -35,6 +37,7 @@ Windows/Linux environment with Andible version 2.3+ installed
       mysql_db_root_password='Foo1234567*1' wp_site_url=wp-app.com \
       wp_admin_user=wpadmin wp_admin_password='wpadmin1'      wp_admin_email='wpadmin@example.com'"
       ````
+
       Variable names should be self explonatory.
 
       Though just in case will give you info about some of them:
@@ -47,9 +50,9 @@ Windows/Linux environment with Andible version 2.3+ installed
       You should add them to the trusted certificate store on the machine from where you'll be accessing Wordpress site.
 
   6. Add ip-donain name record to the `hosts` file of the machine from where you'll be accessing Wordpress site. For example:
-
-      `10.130.75.250   wp-app.com`
-
+      ````
+      10.130.75.250   wp-app.com
+      ````
 
   7. After login into Wordpress admin page you should Enable Object Caching to initialize memcaching. In order to do this:
 
