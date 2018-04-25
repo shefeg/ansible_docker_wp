@@ -36,6 +36,7 @@ init()
   pwd
 }
 
+ # Test if directory where to put backup / restore backup exists
 test_output_path() 
 {
   if ! [ -d "${OUTPATH}" ]; then
@@ -44,6 +45,7 @@ test_output_path()
   fi
 }
 
+ # Test if path to backup file exists
 test_backup_path()
 {
   if ! [ -f "${BACKUP_FILE}" ]; then
@@ -52,6 +54,7 @@ test_backup_path()
   fi
 }
 
+  # Test if container ID exists
 test_container_id()
 {
   docker container inspect "${CONTAINER_ID}" > /dev/null
@@ -68,6 +71,7 @@ cleanup() {
   rm -rf "${tmp}"
 }
 
+ # Cleanup before exit
 safe_exit() 
 {
   if [ -d "${tmp}" ]; then
@@ -78,6 +82,7 @@ safe_exit()
   exit
 }
 
+ # Cleanup before exit in case Ctrl-C
 control_c() 
 {
   echo -en "\n## Caught SIGINT; Clean up and Exit \n"
@@ -102,6 +107,15 @@ while [ "$1" != "" ]; do
   esac
   shift
 done
+
+  # Compressing backup files to an archive
+compress_backup()
+{
+  echo
+  echo "Compressing backup files into an archive '${BACKUP_NAME}.tar.gz'..."
+  tar -cvzf "${OUTPATH}/${BACKUP_NAME}.tar.gz" -C "${tmp}" ./* && \
+  echo "Backup archive '${BACKUP_NAME}.tar.gz' created successfully"
+}
 
 # Backup full
 backup_full()
@@ -132,10 +146,7 @@ backup_full()
   done
   
   # Compressing backup files to an archive
-  echo
-  echo "Compressing backup files into an archive '${BACKUP_NAME}.tar.gz'..."
-  tar -cvzf "${OUTPATH}/${BACKUP_NAME}.tar.gz" -C "${tmp}" ./* && \
-  echo "Backup archive '${BACKUP_NAME}.tar.gz' created successfully"
+  compress_backup
 
   cleanup
 }
@@ -154,10 +165,7 @@ backup_container()
   echo
   
   # Compressing backup files to an archive
-  echo
-  echo "Compressing backup files into an archive '${BACKUP_NAME}.tar.gz'..."
-  tar -cvzf "${OUTPATH}/${BACKUP_NAME}.tar.gz" -C "${tmp}" ./* && \
-  echo "Backup archive '${BACKUP_NAME}.tar.gz' created successfully"
+  compress_backup
 
   cleanup
 }
