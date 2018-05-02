@@ -33,5 +33,5 @@
 - name: Generate self-signed certificates
   script: "{{ inventory_dir }}/self-signed-ssl.sh \
           -c=UA -s=Kiev -l=Kiev -o=Docker -u=Docker -e={{ wp_admin_email }} -n={{ wp_site_url }} -p={{ project_src }}/nginx/certificates/"
-  when: certificates_result.matched == 0
+  when: certificates_result.matched != 3
   ignore_errors: true
